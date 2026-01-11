@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CT3000 - Plan Trader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* CT3000 Brand Colors from Landing Page */
+            --blue: #3b82f6;
+            --blue-dark: #1d4ed8;
+            --green: #10b981;
+            --green-dark: #059669;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --bg: #ffffff;
+            --bg-soft: #f8fafc;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-soft) 0%, #e2e8f0 100%);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 48px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--blue);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Main content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Asset type selector */
+        .asset-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .asset-type-btn {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .asset-type-btn:hover {
+            border-color: var(--blue);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .asset-type-btn.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.05));
+            border-color: var(--blue);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .asset-type-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .asset-type-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .asset-type-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Trade panel */
+        .trade-panel {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Search */
+        .search-section {
+            margin-bottom: 32px;
+        }
+
+        .search-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: block;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* Autocomplete */
+        .autocomplete {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .autocomplete.active {
+            display: block;
+            animation: dropIn 0.3s ease-out;
+        }
+
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .autocomplete-item {
+            padding: 16px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--bg-soft);
+        }
+
+        .autocomplete-symbol {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--blue);
+        }
+
+        .autocomplete-name {
+            font-size: 14px;
+            color: var(--muted);
+            margin-left: 12px;
+            flex: 1;
+        }
+
+        .autocomplete-exchange {
+            font-size: 11px;
+            color: var(--muted);
+            background: var(--bg-soft);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Security details */
+        .security-details {
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .security-details.active {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .security-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .security-symbol {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--ink);
+        }
+
+        .security-badge {
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            color: var(--bg);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .security-company {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        .security-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .meta-industry {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+        /* Plan form */
+        .plan-form {
+            display: none;
+        }
+
+        .plan-form.active {
+            display: block;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-select {
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-select:focus {
+            border-color: var(--blue);
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .field-hint.positive {
+            color: var(--green);
+        }
+
+        .field-hint.negative {
+            color: #ef4444;
+        }
+
+        /* Direction selector */
+        .direction-selector {
+            display: flex;
+            gap: 12px;
+        }
+
+        .direction-btn {
+            flex: 1;
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .direction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .direction-btn.active.long {
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            border-color: var(--green);
+            color: var(--bg);
+        }
+
+        .direction-btn.active.short {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: var(--bg);
+        }
+
+        /* Submit button */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .asset-selector {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .asset-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">CT3000</div>
+            <h1>Plan Trader</h1>
+            <p class="subtitle">Define your trade before you execute</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left: Asset type selector -->
+            <div class="asset-selector">
+                <div class="asset-type-btn active" data-type="stock">
+                    <span class="asset-type-icon">📈</span>
+                    <div class="asset-type-title">Stocks</div>
+                    <div class="asset-type-desc">Equities & shares</div>
+                </div>
+
+                <div class="asset-type-btn" data-type="option">
+                    <span class="asset-type-icon">⚡</span>
+                    <div class="asset-type-title">Options</div>
+                    <div class="asset-type-desc">Calls & puts</div>
+                </div>
+
+                <div class="asset-type-btn" data-type="forex">
+                    <span class="asset-type-icon">💱</span>
+                    <div class="asset-type-title">Forex</div>
+                    <div class="asset-type-desc">Currency pairs</div>
+                </div>
+
+                <div class="asset-type-btn" data-type="future">
+                    <span class="asset-type-icon">🔮</span>
+                    <div class="asset-type-title">Futures</div>
+                    <div class="asset-type-desc">Contracts & indices</div>
+                </div>
+            </div>
+
+            <!-- Right: Trade planning panel -->
+            <div class="trade-panel">
+                <div class="search-section">
+                    <label class="search-label">Symbol Search</label>
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="symbolSearch"
+                            placeholder="Type ticker symbol... (e.g., AAPL)"
+                            autocomplete="off"
+                        >
+                        <div class="autocomplete" id="autocomplete"></div>
+                    </div>
+                </div>
+
+                <!-- Security details panel -->
+                <div class="security-details" id="securityDetails">
+                    <div class="security-header">
+                        <div class="security-symbol" id="selectedSymbol">AAPL</div>
+                        <div class="security-badge" id="selectedExchange">NYSE</div>
+                    </div>
+                    <div class="security-company" id="selectedCompany">APPLE INC</div>
+                    <div class="security-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Industry</span>
+                            <span class="meta-industry" id="selectedIndustry">Technology</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Currency</span>
+                            <span class="meta-value" id="selectedCurrency">USD</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Asset Type</span>
+                            <span class="meta-value" id="selectedAssetType">Equity</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Exchange</span>
+                            <span class="meta-value" id="selectedExchangeDetail">NASDAQ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan form -->
+                <div class="plan-form" id="planForm">
+                    <!-- Direction -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Direction</label>
+                            <div class="direction-selector">
+                                <div class="direction-btn long active" data-direction="long">↗ LONG</div>
+                                <div class="direction-btn short" data-direction="short">↘ SHORT</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Type & Detail -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Strategy Type</label>
+                            <select class="form-select" id="strategyType">
+                                <option value="">Select strategy type...</option>
+                                <option value="technical">Technical</option>
+                                <option value="fundamental">Fundamental</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="strategyDetailSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label" id="strategyDetailLabel">Pattern/Setup</label>
+                            <select class="form-select" id="strategyDetail">
+                                <option value="">Select pattern...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quantity & Entry -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-input" id="quantity" placeholder="100" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Entry Price (approx)</label>
+                            <input type="number" class="form-input" id="entryPrice" placeholder="150.00" step="0.01">
+                            <span class="field-hint" id="totalCost"></span>
+                        </div>
+                    </div>
+
+                    <!-- Exit & Stop (Optional) -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Exit Target (Optional)</label>
+                            <input type="number" class="form-input" id="exitPrice" placeholder="160.00" step="0.01">
+                            <span class="field-hint" id="targetProfit"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Stop Loss (Optional)</label>
+                            <input type="number" class="form-input" id="stopLoss" placeholder="145.00" step="0.01">
+                            <span class="field-hint" id="stopLossAmount"></span>
+                        </div>
+                    </div>
+
+                    <!-- R/R Display -->
+                    <div class="form-group">
+                        <label class="form-label">Risk/Reward Ratio</label>
+                        <input type="text" class="form-input" id="rrRatio" placeholder="—" readonly style="background: var(--bg-soft); color: var(--muted); font-weight: 700;">
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label class="form-label">Notes (Optional)</label>
+                        <input type="text" class="form-input" placeholder="Trade rationale, setup details...">
+                    </div>
+
+                    <button class="submit-btn">📋 CREATE TRADE PLAN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded securities data (sample - replace with full dataset)
+        const securities = [
+            { symbol: 'AAPL', conid: 265598, category: 'STK', exchange: 'SMART', company: 'APPLE INC', industry: 'Computers', currency: 'USD' },
+            { symbol: 'MSFT', conid: 272093, category: 'STK', exchange: 'SMART', company: 'MICROSOFT CORPORATION', industry: 'Software', currency: 'USD' },
+            { symbol: 'GOOGL', conid: 208813719, category: 'STK', exchange: 'SMART', company: 'ALPHABET INC-CL A', industry: 'Internet', currency: 'USD' },
+            { symbol: 'TSLA', conid: 76792991, category: 'STK', exchange: 'SMART', company: 'TESLA INC', industry: 'Auto Manufacturers', currency: 'USD' },
+            { symbol: 'NVDA', conid: 4815747, category: 'STK', exchange: 'SMART', company: 'NVIDIA CORP', industry: 'Semiconductors', currency: 'USD' },
+            { symbol: 'META', conid: 107113386, category: 'STK', exchange: 'SMART', company: 'META PLATFORMS INC-CLASS A', industry: 'Internet', currency: 'USD' },
+            { symbol: 'AMZN', conid: 3691937, category: 'STK', exchange: 'SMART', company: 'AMAZON.COM INC', industry: 'Internet', currency: 'USD' },
+            { symbol: 'SPY', conid: 756733, category: 'STK', exchange: 'SMART', company: 'SPDR S&P 500 ETF TRUST', industry: null, currency: 'USD' },
+            { symbol: 'QQQ', conid: 320227571, category: 'STK', exchange: 'SMART', company: 'INVESCO QQQ TRUST SERIES 1', industry: null, currency: 'USD' },
+            { symbol: 'EUR.USD', conid: 12087792, category: 'CASH', exchange: 'IDEALPRO', company: 'European Monetary Union Euro', industry: null, currency: 'USD' },
+            { symbol: 'GBP.USD', conid: 12087797, category: 'CASH', exchange: 'IDEALPRO', company: 'British pound', industry: null, currency: 'USD' },
+            { symbol: 'USD.JPY', conid: 15016059, category: 'CASH', exchange: 'IDEALPRO', company: 'United States dollar', industry: null, currency: 'JPY' },
+            { symbol: 'ES', conid: 11004968, category: 'IND', exchange: 'CME', company: 'E-mini S&P 500', industry: null, currency: 'USD' },
+            { symbol: 'NQ', conid: 11004958, category: 'IND', exchange: 'CME', company: 'E-mini NASDAQ 100', industry: null, currency: 'USD' },
+            { symbol: 'GC', conid: 17340718, category: 'IND', exchange: 'COMEX', company: 'Gold', industry: null, currency: 'USD' },
+        ];
+
+        // Strategy options
+        const strategyOptions = {
+            technical: [
+                { value: 'breakout', label: 'Breakout' },
+                { value: 'reversal', label: 'Reversal' },
+                { value: 'head-shoulders', label: 'Head & Shoulders' },
+                { value: 'triangle', label: 'Triangle' },
+                { value: 'flag-pennant', label: 'Flag/Pennant' },
+                { value: 'support-resistance', label: 'Support/Resistance' },
+                { value: 'moving-average', label: 'Moving Average' },
+                { value: 'trend-line', label: 'Trend Line' },
+                { value: 'other-technical', label: 'Other Technical' }
+            ],
+            fundamental: [
+                { value: 'earnings', label: 'Earnings' },
+                { value: 'news-event', label: 'News Event' },
+                { value: 'macro-data', label: 'Macro Data' },
+                { value: 'sector-play', label: 'Sector Play' },
+                { value: 'value-play', label: 'Value Play' },
+                { value: 'analyst-upgrade', label: 'Analyst Upgrade/Downgrade' },
+                { value: 'merger-acquisition', label: 'Merger/Acquisition' },
+                { value: 'other-fundamental', label: 'Other Fundamental' }
+            ]
+        };
+
+        const searchInput = document.getElementById('symbolSearch');
+        const autocomplete = document.getElementById('autocomplete');
+        const securityDetails = document.getElementById('securityDetails');
+        const planForm = document.getElementById('planForm');
+        const strategyType = document.getElementById('strategyType');
+        const strategyDetailSection = document.getElementById('strategyDetailSection');
+        const strategyDetail = document.getElementById('strategyDetail');
+        const strategyDetailLabel = document.getElementById('strategyDetailLabel');
+
+        let selectedSecurity = null;
+
+        // Asset type display mapping
+        const assetTypeLabels = {
+            'STK': 'Equity',
+            'CASH': 'Currency',
+            'IND': 'Index'
+        };
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toUpperCase();
+            
+            if (query.length === 0) {
+                autocomplete.classList.remove('active');
+                return;
+            }
+
+            const matches = securities.filter(sec => 
+                sec.symbol.includes(query) || 
+                sec.company.includes(query)
+            );
+
+            if (matches.length > 0) {
+                autocomplete.innerHTML = matches.map(sec => `
+                    <div class="autocomplete-item" data-symbol="${sec.symbol}">
+                        <span class="autocomplete-symbol">${sec.symbol}</span>
+                        <span class="autocomplete-name">${sec.company}</span>
+                        <span class="autocomplete-exchange">${sec.exchange}</span>
+                    </div>
+                `).join('');
+                autocomplete.classList.add('active');
+            } else {
+                autocomplete.classList.remove('active');
+            }
+        });
+
+        // Autocomplete selection
+        autocomplete.addEventListener('click', (e) => {
+            const item = e.target.closest('.autocomplete-item');
+            if (item) {
+                const symbol = item.dataset.symbol;
+                selectedSecurity = securities.find(s => s.symbol === symbol);
+                
+                if (selectedSecurity) {
+                    searchInput.value = selectedSecurity.symbol;
+                    autocomplete.classList.remove('active');
+
+                    document.getElementById('selectedSymbol').textContent = selectedSecurity.symbol;
+                    document.getElementById('selectedExchange').textContent = selectedSecurity.exchange;
+                    document.getElementById('selectedCompany').textContent = selectedSecurity.company;
+                    document.getElementById('selectedIndustry').textContent = selectedSecurity.industry;
+                    document.getElementById('selectedCurrency').textContent = selectedSecurity.currency;
+                    document.getElementById('selectedAssetType').textContent = assetTypeLabels[selectedSecurity.category] || selectedSecurity.category;
+                    document.getElementById('selectedExchangeDetail').textContent = selectedSecurity.exchange;
+
+                    securityDetails.classList.add('active');
+                    planForm.classList.add('active');
+                }
+            }
+        });
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-box')) {
+                autocomplete.classList.remove('active');
+            }
+        });
+
+        // Strategy type change
+        strategyType.addEventListener('change', (e) => {
+            const type = e.target.value;
+            
+            if (type) {
+                const options = strategyOptions[type];
+                strategyDetail.innerHTML = '<option value="">Select...</option>' + 
+                    options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('');
+                
+                strategyDetailLabel.textContent = type === 'technical' ? 'Pattern/Setup' : 'Catalyst';
+                strategyDetailSection.style.display = 'block';
+            } else {
+                strategyDetailSection.style.display = 'none';
+            }
+        });
+
+        // R/R calculation and nominal amount displays
+        function updateCalculations() {
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const entry = parseFloat(document.getElementById('entryPrice').value) || 0;
+            const exit = parseFloat(document.getElementById('exitPrice').value) || 0;
+            const stop = parseFloat(document.getElementById('stopLoss').value) || 0;
+            const rrDisplay = document.getElementById('rrRatio');
+            const totalCostDisplay = document.getElementById('totalCost');
+            const targetProfitDisplay = document.getElementById('targetProfit');
+            const stopLossDisplay = document.getElementById('stopLossAmount');
+            
+            const currency = selectedSecurity ? selectedSecurity.currency : 'USD';
+            const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency + ' ';
+            
+            const direction = document.querySelector('.direction-btn.active').dataset.direction;
+            
+            // Total cost calculation (under entry price)
+            if (quantity && entry) {
+                const totalCost = quantity * entry;
+                totalCostDisplay.textContent = `Total Cost: ${currencySymbol}${totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                totalCostDisplay.className = 'field-hint';
+            } else {
+                totalCostDisplay.textContent = '';
+            }
+            
+            // Target profit (just the profit amount)
+            if (quantity && exit && entry) {
+                const profit = direction === 'long' ? (exit - entry) * quantity : (entry - exit) * quantity;
+                targetProfitDisplay.textContent = `Target Profit: ${profit >= 0 ? '+' : ''}${currencySymbol}${profit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                targetProfitDisplay.className = profit >= 0 ? 'field-hint positive' : 'field-hint negative';
+            } else {
+                targetProfitDisplay.textContent = '';
+            }
+            
+            // Stop loss (just the loss amount)
+            if (quantity && stop && entry) {
+                const loss = direction === 'long' ? (stop - entry) * quantity : (entry - stop) * quantity;
+                stopLossDisplay.textContent = `Stop Loss: ${loss >= 0 ? '+' : ''}${currencySymbol}${loss.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                stopLossDisplay.className = loss >= 0 ? 'field-hint positive' : 'field-hint negative';
+            } else {
+                stopLossDisplay.textContent = '';
+            }
+            
+            // R/R calculation
+            if (entry && exit && stop) {
+                let risk, reward;
+                
+                if (direction === 'long') {
+                    risk = entry - stop;
+                    reward = exit - entry;
+                } else {
+                    risk = stop - entry;
+                    reward = entry - exit;
+                }
+                
+                if (risk > 0 && reward > 0) {
+                    const rr = (reward / risk).toFixed(2);
+                    rrDisplay.value = `${rr}:1`;
+                    rrDisplay.style.color = 'var(--green)';
+                } else {
+                    rrDisplay.value = 'Invalid';
+                    rrDisplay.style.color = '#ef4444';
+                }
+            } else {
+                rrDisplay.value = '—';
+                rrDisplay.style.color = 'var(--muted)';
+            }
+        }
+
+        document.getElementById('quantity').addEventListener('input', updateCalculations);
+        document.getElementById('entryPrice').addEventListener('input', updateCalculations);
+        document.getElementById('exitPrice').addEventListener('input', updateCalculations);
+        document.getElementById('stopLoss').addEventListener('input', updateCalculations);
+
+        // Asset type selector
+        document.querySelectorAll('.asset-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.asset-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                securityDetails.classList.remove('active');
+                planForm.classList.remove('active');
+                searchInput.value = '';
+                selectedSecurity = null;
+            });
+        });
+
+        // Direction selector
+        document.querySelectorAll('.direction-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                updateCalculations();
+            });
+        });
+
+        // Submit
+        document.querySelector('.submit-btn').addEventListener('click', () => {
+            alert('Trade plan created! ✅\n\nIn the real app, this would save to the planned_trades table.');
+        });
+    </script>
+</body>
+</html>
