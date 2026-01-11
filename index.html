@@ -87,47 +87,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Asset type selector */
-.asset-type-btn {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-
-        .asset-type-btn:hover {
-            border-color: var(--blue);
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        .asset-type-btn.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.05));
-            border-color: var(--blue);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-        }
-
-        .asset-type-icon {
-            font-size: 28px;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .asset-type-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--ink);
-            margin-bottom: 4px;
-        }
-
-        .asset-type-desc {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
         /* Trade panel */
         .trade-panel {
             background: var(--bg);
@@ -291,7 +250,6 @@
             letter-spacing: 0.5px;
         }
 
-        
         .security-badges {
             display: flex;
             gap: 10px;
@@ -303,7 +261,8 @@
             color: var(--ink);
             border: 2px solid var(--border);
         }
-.security-company {
+
+        .security-company {
             font-size: 18px;
             font-weight: 600;
             color: var(--ink);
@@ -410,6 +369,8 @@
             outline: none;
             cursor: pointer;
             transition: all 0.3s;
+            min-height: 52px;
+            height: 52px;
         }
 
         .form-select:focus {
@@ -429,6 +390,51 @@
 
         .field-hint.negative {
             color: #ef4444;
+        }
+
+        /* Setup dropdown */
+        .setup-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .setup-dropdown.active {
+            display: block;
+            animation: dropIn 0.3s ease-out;
+        }
+
+        .setup-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .setup-option:last-child {
+            border-bottom: none;
+        }
+
+        .setup-option:hover {
+            background: var(--bg-soft);
+            color: var(--blue);
+        }
+
+        .setup-option.hidden {
+            display: none;
         }
 
         /* Direction selector */
@@ -496,7 +502,7 @@
 
         /* Responsive */
         @media (max-width: 640px) {
-.form-row {
+            .form-row {
                 grid-template-columns: 1fr;
             }
 
@@ -515,8 +521,7 @@
         </div>
 
         <div class="main-content">
-            <!-- Right: Trade planning panel -->
-<div class="trade-panel">
+            <div class="trade-panel">
                 <div class="search-section">
                     <label class="search-label">Symbol Search</label>
                     <div class="search-box">
@@ -533,7 +538,6 @@
 
                 <!-- Security details panel -->
                 <div class="security-details" id="securityDetails">
-                    
                     <div class="security-header">
                         <div class="security-symbol" id="selectedSymbol">AAPL</div>
                         <div class="security-badges">
@@ -575,38 +579,44 @@
                         </div>
                     </div>
 
-                    <!-- Strategy Type & Detail -->
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label class="form-label">Strategy Type</label>
-                            <select class="form-select" id="strategyType">
-                                <option value="">Select strategy type...</option>
-                                <option value="technical">Technical</option>
-                                <option value="fundamental">Fundamental</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-section" id="strategyDetailSection" style="display: none;">
-                        <div class="form-group">
-                            <label class="form-label" id="strategyDetailLabel">Pattern/Setup</label>
-                            <select class="form-select" id="strategyDetail">
-                                <option value="">Select pattern...</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Quantity & Entry -->
+                    <!-- Setup Type & Quantity - SEARCHABLE -->
                     <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Setup Type</label>
+                            <div class="setup-search-box" style="position: relative;">
+                                <input 
+                                    type="text" 
+                                    class="form-input" 
+                                    id="setupType"
+                                    placeholder="Type or select... (e.g., Breakout)"
+                                    autocomplete="off"
+                                >
+                                <div class="setup-dropdown" id="setupDropdown">
+                                    <div class="setup-option" data-value="breakout">Breakout</div>
+                                    <div class="setup-option" data-value="support-resistance">Support/Resistance</div>
+                                    <div class="setup-option" data-value="trend-ma">Trend/Moving Average</div>
+                                    <div class="setup-option" data-value="reversal">Reversal Pattern</div>
+                                    <div class="setup-option" data-value="momentum">Momentum</div>
+                                    <div class="setup-option" data-value="earnings">Earnings</div>
+                                    <div class="setup-option" data-value="news-event">News/Event</div>
+                                    <div class="setup-option" data-value="value-play">Value Play</div>
+                                    <div class="setup-option" data-value="analyst-rating">Analyst Rating</div>
+                                    <div class="setup-option" data-value="macro-sector">Macro/Sector</div>
+                                    <div class="setup-option" data-value="other">Other</div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="form-label">Quantity</label>
                             <input type="number" class="form-input" id="quantity" placeholder="100" value="100">
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Entry Price (approx)</label>
-                            <input type="number" class="form-input" id="entryPrice" placeholder="150.00" step="0.01">
-                            <span class="field-hint" id="totalCost"></span>
-                        </div>
+                    </div>
+
+                    <!-- Entry Price (full width row) -->
+                    <div class="form-group">
+                        <label class="form-label">Entry Price (approx)</label>
+                        <input type="number" class="form-input" id="entryPrice" placeholder="150.00" step="0.01">
+                        <span class="field-hint" id="totalCost"></span>
                     </div>
 
                     <!-- Exit & Stop (Optional) -->
@@ -642,7 +652,7 @@
     </div>
 
     <script>
-        // Embedded securities data (sample - replace with full dataset)
+        // Embedded securities data
         const securities = [
             { symbol: 'AAPL', conid: 265598, category: 'STK', exchange: 'SMART', company: 'APPLE INC', industry: 'Computers', currency: 'USD' },
             { symbol: 'MSFT', conid: 272093, category: 'STK', exchange: 'SMART', company: 'MICROSOFT CORPORATION', industry: 'Software', currency: 'USD' },
@@ -661,41 +671,55 @@
             { symbol: 'GC', conid: 17340718, category: 'IND', exchange: 'COMEX', company: 'Gold', industry: null, currency: 'USD' },
         ];
 
-        // Strategy options
-        const strategyOptions = {
-            technical: [
-                { value: 'breakout', label: 'Breakout' },
-                { value: 'reversal', label: 'Reversal' },
-                { value: 'head-shoulders', label: 'Head & Shoulders' },
-                { value: 'triangle', label: 'Triangle' },
-                { value: 'flag-pennant', label: 'Flag/Pennant' },
-                { value: 'support-resistance', label: 'Support/Resistance' },
-                { value: 'moving-average', label: 'Moving Average' },
-                { value: 'trend-line', label: 'Trend Line' },
-                { value: 'other-technical', label: 'Other Technical' }
-            ],
-            fundamental: [
-                { value: 'earnings', label: 'Earnings' },
-                { value: 'news-event', label: 'News Event' },
-                { value: 'macro-data', label: 'Macro Data' },
-                { value: 'sector-play', label: 'Sector Play' },
-                { value: 'value-play', label: 'Value Play' },
-                { value: 'analyst-upgrade', label: 'Analyst Upgrade/Downgrade' },
-                { value: 'merger-acquisition', label: 'Merger/Acquisition' },
-                { value: 'other-fundamental', label: 'Other Fundamental' }
-            ]
-        };
-
         const searchInput = document.getElementById('symbolSearch');
         const autocomplete = document.getElementById('autocomplete');
         const securityDetails = document.getElementById('securityDetails');
         const planForm = document.getElementById('planForm');
-        const strategyType = document.getElementById('strategyType');
-        const strategyDetailSection = document.getElementById('strategyDetailSection');
-        const strategyDetail = document.getElementById('strategyDetail');
-        const strategyDetailLabel = document.getElementById('strategyDetailLabel');
+        const setupInput = document.getElementById('setupType');
+        const setupDropdown = document.getElementById('setupDropdown');
 
         let selectedSecurity = null;
+        let selectedSetup = '';
+
+        // Setup type search/filter
+        setupInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            const options = setupDropdown.querySelectorAll('.setup-option');
+            
+            let hasMatches = false;
+            options.forEach(opt => {
+                const text = opt.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    opt.classList.remove('hidden');
+                    hasMatches = true;
+                } else {
+                    opt.classList.add('hidden');
+                }
+            });
+            
+            setupDropdown.classList.toggle('active', hasMatches);
+        });
+
+        setupInput.addEventListener('focus', () => {
+            setupDropdown.classList.add('active');
+        });
+
+        // Setup option selection
+        setupDropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.setup-option');
+            if (option) {
+                selectedSetup = option.dataset.value;
+                setupInput.value = option.textContent;
+                setupDropdown.classList.remove('active');
+            }
+        });
+
+        // Close setup dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.setup-search-box')) {
+                setupDropdown.classList.remove('active');
+            }
+        });
 
         // Asset type display mapping
         const assetTypeLabels = {
@@ -768,26 +792,10 @@
             }
         });
 
-        // Close autocomplete when clicking outside
+        // Close autocomplete when clicking outside (symbol search)
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.search-box')) {
                 autocomplete.classList.remove('active');
-            }
-        });
-
-        // Strategy type change
-        strategyType.addEventListener('change', (e) => {
-            const type = e.target.value;
-            
-            if (type) {
-                const options = strategyOptions[type];
-                strategyDetail.innerHTML = '<option value="">Select...</option>' + 
-                    options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('');
-                
-                strategyDetailLabel.textContent = type === 'technical' ? 'Pattern/Setup' : 'Catalyst';
-                strategyDetailSection.style.display = 'block';
-            } else {
-                strategyDetailSection.style.display = 'none';
             }
         });
 
