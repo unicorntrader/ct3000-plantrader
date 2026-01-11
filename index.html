@@ -77,7 +77,7 @@
         /* Main content */
         .main-content {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 1fr;
             gap: 24px;
             animation: fadeIn 0.8s ease-out 0.2s both;
         }
@@ -88,13 +88,7 @@
         }
 
         /* Asset type selector */
-        .asset-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .asset-type-btn {
+.asset-type-btn {
             background: var(--bg);
             border: 2px solid var(--border);
             border-radius: 12px;
@@ -297,7 +291,19 @@
             letter-spacing: 0.5px;
         }
 
-        .security-company {
+        
+        .security-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .security-badge.secondary {
+            background: var(--bg-soft);
+            color: var(--ink);
+            border: 2px solid var(--border);
+        }
+.security-company {
             font-size: 18px;
             font-weight: 600;
             color: var(--ink);
@@ -489,23 +495,8 @@
         }
 
         /* Responsive */
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            .asset-selector {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         @media (max-width: 640px) {
-            .asset-selector {
-                grid-template-columns: 1fr;
-            }
-
-            .form-row {
+.form-row {
                 grid-template-columns: 1fr;
             }
 
@@ -524,35 +515,8 @@
         </div>
 
         <div class="main-content">
-            <!-- Left: Asset type selector -->
-            <div class="asset-selector">
-                <div class="asset-type-btn active" data-type="stock">
-                    <span class="asset-type-icon">📈</span>
-                    <div class="asset-type-title">Stocks</div>
-                    <div class="asset-type-desc">Equities & shares</div>
-                </div>
-
-                <div class="asset-type-btn" data-type="option">
-                    <span class="asset-type-icon">⚡</span>
-                    <div class="asset-type-title">Options</div>
-                    <div class="asset-type-desc">Calls & puts</div>
-                </div>
-
-                <div class="asset-type-btn" data-type="forex">
-                    <span class="asset-type-icon">💱</span>
-                    <div class="asset-type-title">Forex</div>
-                    <div class="asset-type-desc">Currency pairs</div>
-                </div>
-
-                <div class="asset-type-btn" data-type="future">
-                    <span class="asset-type-icon">🔮</span>
-                    <div class="asset-type-title">Futures</div>
-                    <div class="asset-type-desc">Contracts & indices</div>
-                </div>
-            </div>
-
             <!-- Right: Trade planning panel -->
-            <div class="trade-panel">
+<div class="trade-panel">
                 <div class="search-section">
                     <label class="search-label">Symbol Search</label>
                     <div class="search-box">
@@ -569,9 +533,13 @@
 
                 <!-- Security details panel -->
                 <div class="security-details" id="securityDetails">
+                    
                     <div class="security-header">
                         <div class="security-symbol" id="selectedSymbol">AAPL</div>
-                        <div class="security-badge" id="selectedExchange">NYSE</div>
+                        <div class="security-badges">
+                            <div class="security-badge" id="selectedTypeBadge">STOCK</div>
+                            <div class="security-badge secondary" id="selectedExchange">SMART</div>
+                        </div>
                     </div>
                     <div class="security-company" id="selectedCompany">APPLE INC</div>
                     <div class="security-meta">
@@ -731,9 +699,19 @@
 
         // Asset type display mapping
         const assetTypeLabels = {
-            'STK': 'Equity',
-            'CASH': 'Currency',
+            'STK': 'Stock',
+            'CASH': 'Forex',
+            'OPT': 'Options',
+            'FUT': 'Futures',
             'IND': 'Index'
+        };
+
+        const assetTypeBadges = {
+            'STK': 'STOCK',
+            'CASH': 'FOREX',
+            'OPT': 'OPTIONS',
+            'FUT': 'FUTURES',
+            'IND': 'INDEX'
         };
 
         // Search functionality
@@ -778,9 +756,10 @@
                     document.getElementById('selectedSymbol').textContent = selectedSecurity.symbol;
                     document.getElementById('selectedExchange').textContent = selectedSecurity.exchange;
                     document.getElementById('selectedCompany').textContent = selectedSecurity.company;
-                    document.getElementById('selectedIndustry').textContent = selectedSecurity.industry;
+                    document.getElementById('selectedIndustry').textContent = selectedSecurity.industry || '—';
                     document.getElementById('selectedCurrency').textContent = selectedSecurity.currency;
                     document.getElementById('selectedAssetType').textContent = assetTypeLabels[selectedSecurity.category] || selectedSecurity.category;
+                    document.getElementById('selectedTypeBadge').textContent = assetTypeBadges[selectedSecurity.category] || selectedSecurity.category;
                     document.getElementById('selectedExchangeDetail').textContent = selectedSecurity.exchange;
 
                     securityDetails.classList.add('active');
@@ -885,19 +864,6 @@
         document.getElementById('entryPrice').addEventListener('input', updateCalculations);
         document.getElementById('exitPrice').addEventListener('input', updateCalculations);
         document.getElementById('stopLoss').addEventListener('input', updateCalculations);
-
-        // Asset type selector
-        document.querySelectorAll('.asset-type-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.asset-type-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                securityDetails.classList.remove('active');
-                planForm.classList.remove('active');
-                searchInput.value = '';
-                selectedSecurity = null;
-            });
-        });
 
         // Direction selector
         document.querySelectorAll('.direction-btn').forEach(btn => {
